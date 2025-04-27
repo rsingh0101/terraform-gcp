@@ -1,0 +1,3 @@
+terraform plan -input=false -compact-warnings -out=plan.file
+terraform show -json <plan-file> | jq 'select( .type == "change_summary")|."@message"'
+terraform show -json <plan-file> |  jq -r '([.resource_changes[]?.change.actions?]|flatten)|{"create":(map(select(.=="create"))|length),"update":(map(select(.=="update"))|length),"delete":(map(select(.=="delete"))|length)}'

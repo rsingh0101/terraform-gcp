@@ -1,0 +1,7 @@
+project_id = "my-dev-project"
+region = "us-central1"
+zone = "us-central1-a"
+vpc_name = "dev-vpc"
+subnet_cidr = "10.0.1.0/24"
+vm_name = "dev-instance"
+vm_type = "e2-medium"

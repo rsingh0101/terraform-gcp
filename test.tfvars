@@ -1,0 +1,8 @@
+project_id  = "aqueous-scout-444117-j2"
+region      = "asia-south1"
+zone        = "asia-south1-a"
+vm_type     = "e2-small"
+vm_name     = "gcp-vm"
+subnet_cidr = "10.0.0.0/24"
+vpc_name    = "gcp-vm"
+subnetwork  = "dev-vpc-subnet"
