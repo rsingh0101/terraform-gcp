@@ -58,9 +58,23 @@ default     = ["redis", "benchmark"]
 }
 
 variable "metadata" {
-description = "Metadata key/value pairs"
-type        = map(string)
-default     = {}
+  type = map(string)
+  default = {
+    "startup-script" = <<-EOF
+      #!/bin/bash
+      apt-get update
+      apt-get install -y docker.io docker-compose git
+      systemctl start docker
+      systemctl enable docker
+
+      # Pull docker-compose and other config files (example: from GitHub)
+      git clone https://github.com/youruser/yourrepo.git /opt/redis-benchmark
+
+      cd /scripts/redis_benchmark
+      docker-compose up -d
+    EOF
+  }
 }
+
 
 

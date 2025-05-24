@@ -1,7 +1,6 @@
-# terraform-gcp
+# Terraform-GCP
 
 [![Terraform Version](https://img.shields.io/badge/terraform-1.x-blue)](https://www.terraform.io)  
-[![License](https://img.shields.io/github/license/rsingh0101/terraform-gcp)](LICENSE)
 
 ---
 
