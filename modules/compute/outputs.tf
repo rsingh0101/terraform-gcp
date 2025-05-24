@@ -1,20 +1,19 @@
-output "vm_name" {
-  description = "The name of the VM instance"
-  value       = google_compute_instance.vm.name
+output "instance_name" {
+  value       = google_compute_instance.vm_instance.name
+  description = "Name of the created VM instance"
 }
 
-output "vm_zone" {
-  description = "The zone where the VM is deployed"
-  value       = google_compute_instance.vm.zone
+output "instance_self_link" {
+  value       = google_compute_instance.vm_instance.self_link
+  description = "Self link of the VM instance"
 }
 
-output "vm_public_ip" {
-  description = "The public IP address of the VM"
-  value       = google_compute_instance.vm.network_interface[0].access_config[0].nat_ip
+output "instance_network_ip" {
+  value       = google_compute_instance.vm_instance.network_interface[0].network_ip
+  description = "Internal IP address"
 }
 
-output "vm_private_ip" {
-  description = "The private IP address of the VM"
-  value       = google_compute_instance.vm.network_interface[0].network_ip
+output "instance_external_ip" {
+  value       = google_compute_instance.vm_instance.network_interface[0].access_config[0].nat_ip
+  description = "External IP address"
 }
-

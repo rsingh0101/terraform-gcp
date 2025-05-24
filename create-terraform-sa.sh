@@ -1,6 +1,7 @@
 #!/bin/bash
+project_id=$1
 
-PROJECT_ID="aqueous-scout-444117-j2"
+PROJECT_ID="$project_id"
 SA_NAME="terraform-admin"
 SA_DISPLAY_NAME="Terraform Admin Service Account"
 KEY_OUTPUT_PATH=".secrets/${SA_NAME}-key.json"
@@ -34,6 +35,6 @@ gcloud iam service-accounts keys create "$KEY_OUTPUT_PATH" \
   --iam-account="${SA_NAME}@${PROJECT_ID}.iam.gserviceaccount.com" \
   --project="$PROJECT_ID"
 
-echo "✅ Service account setup complete!"
-echo "👉 Export this in your shell to use Terraform:"
-echo "   export GOOGLE_APPLICATION_CREDENTIALS=\"$KEY_OUTPUT_PATH\""
+echo "Service account setup complete!"
+echo "Export this in your shell to use Terraform:"
+echo "export GOOGLE_APPLICATION_CREDENTIALS=\"$KEY_OUTPUT_PATH\""

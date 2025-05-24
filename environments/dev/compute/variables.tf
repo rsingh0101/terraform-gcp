@@ -1,80 +1,58 @@
 variable "project_id" {
-description = "GCP project ID"
-type        = string
+  type = string
 }
 
 variable "region" {
-description = "GCP region"
-type        = string
-default     = "us-central1"
+  type = string
 }
 
 variable "zone" {
-description = "GCP zone"
-type        = string
-default     = "us-central1-a"
+  type = string
 }
 
-variable "instance_name" {
-description = "Name of the Compute Engine instance"
-type        = string
-default     = "redis-benchmark-vm"
+variable "vpc_name" {
+  type = string
 }
 
-variable "machine_type" {
-description = "Machine type"
-type        = string
-default     = "e2-medium"
+variable "subnet_cidr" {
+  type = string
 }
-
-variable "boot_disk_size_gb" {
-description = "Boot disk size in GB"
-type        = number
-default     = 20
-}
-
-variable "boot_disk_type" {
-description = "Boot disk type"
-type        = string
-default     = "pd-balanced"
-}
-
 variable "network" {
-description = "VPC network name"
-type        = string
-default     = "default"
+  type = string
 }
 
 variable "subnetwork" {
-description = "Subnetwork name"
-type        = string
-default     = ""
+  type = string
 }
 
 variable "tags" {
-description = "Network tags"
-type        = list(string)
-default     = ["redis", "benchmark"]
+  type = list(string)
 }
 
 variable "metadata" {
   type = map(string)
-  default = {
-    "startup-script" = <<-EOF
-      #!/bin/bash
-      apt-get update
-      apt-get install -y docker.io docker-compose git
-      systemctl start docker
-      systemctl enable docker
-
-      # Pull docker-compose and other config files (example: from GitHub)
-      git clone https://github.com/youruser/yourrepo.git /opt/redis-benchmark
-
-      cd /scripts/redis_benchmark
-      docker-compose up -d
-    EOF
-  }
 }
-
-
-
+variable "machine_type" {
+  type = string
+}
+variable "instance_name" {
+  type = string
+}
+variable "firewall_rules" {
+  type = list(object({
+    name          = string
+    description   = optional(string)
+    direction     = optional(string)
+    priority      = optional(number)
+    source_ranges = optional(list(string))
+    target_tags   = optional(list(string))
+    allowed       = list(object({
+      protocol = string
+      ports    = optional(list(string))
+    }))
+    denied = optional(list(object({
+      protocol = string
+      ports    = optional(list(string))
+    })), [])
+  }))
+}

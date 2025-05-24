@@ -5,13 +5,32 @@ services:
     image: redis:7
     ports:
       - "6379:6379"
+  
+  redis-exporter:
+    image: oliver006/redis_exporter
+    environment:
+      - REDIS_ADDR=redis:6379
+    ports:
+      - "9121:9121"
+    depends_on:
+      - redis
 
   redis-benchmark:
     image: redis:7
     depends_on:
       - redis
     entrypoint: redis-benchmark -h redis -p 6379 -n 100000 -c 50
-
+  
+  memtier:
+    image: redislabs/memtier_benchmark
+    depends_on:
+      - redis
+    entrypoint: >
+      sh -c "sleep 20 && memtier_benchmark
+      -s redis -p 6379 --protocol redis
+      --requests=100000 --clients=100 --threads=4
+      --ratio=1:10 --data-size=256"
+  
   prometheus:
     image: prom/prometheus
     volumes:

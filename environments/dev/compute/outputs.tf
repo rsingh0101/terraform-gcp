@@ -1,6 +1,6 @@
 output "instance_name" {
 description = "Compute instance name"
-value       = module.redis_compute.name
+value       = module.compute
 }
 
 output "instance_zone" {
@@ -10,6 +10,6 @@ value       = var.zone
 
 output "instance_ip" {
 description = "External IP address of the instance"
-value       = module.redis_compute.external_ip
+value       = module.compute.instance_external_ip
 }
 

@@ -1,20 +1,30 @@
-resource "google_compute_instance" "vm" {
-  name         = var.vm_name
-  machine_type = var.vm_type
-  zone         = var.zone
+resource "google_compute_instance" "vm_instance" {
+  name         = var.instance_name
   project      = var.project_id
+  zone         = var.zone
+  machine_type = var.machine_type
+  metadata = var.metadata
+  tags = var.tags
 
   boot_disk {
     initialize_params {
-      image = "debian-cloud/debian-11"
-      size  = 20 # Default disk size in GB
+      image = var.boot_disk_image
     }
   }
 
   network_interface {
     network    = var.network
-    subnetwork = var.subnetwork # Explicitly specify subnetwork
-    access_config {} # Assigns an external IP
+    subnetwork = var.subnetwork
+    access_config {}
+  }
+
+  service_account {
+    email  = var.service_account_email
+    scopes = var.scopes
+  }
+
+  scheduling {
+    preemptible = var.preemptible
+    automatic_restart= var.automatic_restart
   }
 }
-

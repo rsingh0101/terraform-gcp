@@ -1,23 +1,30 @@
 provider "google" {
-project = var.project_id
-region  = var.region
-zone    = var.zone
+  project = var.project_id
+  region  = var.region
+  zone    = var.zone
 }
 
-module "redis_compute" {
-source       = "../../modules/compute"
+module "compute" {
+  source = "../../../modules/compute"
+  instance_name = var.instance_name
+  machine_type = var.machine_type
+  zone       = var.zone
+  project_id = var.project_id
 
-name         = var.instance_name
-machine_type = var.machine_type
-zone         = var.zone
-project_id   = var.project_id
+  network    = var.network
+  subnetwork = var.subnetwork
 
-boot_disk_size_gb = var.boot_disk_size_gb
-boot_disk_type    = var.boot_disk_type
-
-network         = var.network
-subnetwork      = var.subnetwork
-tags            = var.tags
-metadata        = var.metadata
+  tags     = var.tags
+  metadata = var.metadata
 }
 
+module "network" {
+  source      = "../../../modules/network"
+
+  project_id  = var.project_id
+  region      = var.region
+  vpc_name    = var.vpc_name
+  subnet_cidr = var.subnet_cidr
+  subnetwork  = var.subnetwork
+  firewall_rules = var.firewall_rules
+}
