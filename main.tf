@@ -29,8 +29,3 @@ module "compute" {
         subnetwork = module.network.subnet_name
 }
 
-module "gke" {
-    source   = "./modules/gke/"
-        project_id = var.tf-postgresql_role
-}
-
