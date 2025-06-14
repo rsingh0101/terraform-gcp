@@ -8,7 +8,7 @@ subnet_cidr  = "10.0.0.0/16"
 network      = "my-vpc"
 subnetwork   = "my-subnet"
 
-instance_name = "redis-benchmark-instance"
+instance_name = "benchmark"
 machine_type  = "e2-medium"
 
 tags = [
@@ -24,7 +24,7 @@ metadata = {
 
     cd /home/ubuntu
     git clone https://github.com/rsingh0101/terraform-gcp.git /opt/redis-benchmark
-    cd /opt//redis-benchmark/scripts/redis-benchmark
+    cd /opt/redis-benchmark/scripts/redis-benchmark
     docker-compose up -d
 
   EOT

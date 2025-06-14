@@ -1,0 +1,81 @@
+project_id   = "aqueous-scout-444117-j2"
+region       = "us-central1"
+zone         = "us-central1-a"
+
+vpc_name     = "my-vpc"
+subnet_cidr  = "10.0.0.0/16"
+
+network      = "my-vpc"
+subnetwork   = "my-subnet"
+
+instance_name = "elasticsearch"
+machine_type  = "e2-highmem-2"
+
+tags = [
+  "elasticsearch"
+]
+
+metadata = {
+  startup-script = <<-EOT
+    #!/bin/bash
+    apt-get update
+    apt-get install -y docker.io docker-compose curl apt-transport-https
+
+    usermod -aG docker ubuntu
+
+    # Install Helm
+    curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+    chmod 700 get_helm.sh
+    ./get_helm.sh
+
+    # Install kubectl
+    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+    chmod +x kubectl
+    mv ./kubectl /usr/local/bin/kubectl
+
+    # Install kind
+    cd /home/ubuntu
+    curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.29.0/kind-linux-amd64
+    chmod +x ./kind
+    mv ./kind /usr/local/bin/kind
+
+    # Create kind cluster
+    cat <<EOF > cluster.yaml
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+  - role: control-plane
+  - role: worker
+EOF
+
+    kind create cluster --config=cluster.yaml
+    sleep 60
+
+    # Install ECK operator
+    helm repo add elastic https://helm.elastic.co
+    helm repo update
+    helm install elastic-operator elastic/eck-operator -n elastic-system --create-namespace
+    sleep 60
+
+    # Apply Filebeat config
+    kubectl apply -f https://raw.githubusercontent.com/elastic/cloud-on-k8s/3.0/config/recipes/beats/filebeat_autodiscover.yaml
+  EOT
+}
+
+firewall_rules = [
+  {
+    name          = "allow-elasticsearch"
+    description   = "Allow multiple app endpoints"
+    direction     = "INGRESS"
+    priority      = 1000
+    source_ranges = ["0.0.0.0/0"]
+    target_tags   = ["elasticsearch"]
+    allowed = [
+      {
+        protocol = "tcp"
+        ports    = ["22", "80", "443", "5601", "9200"]
+      }
+    ]
+  }
+]
+
