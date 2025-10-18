@@ -83,3 +83,17 @@ variable "automatic_restart" {
   description = "Whether the VM should automatically restart"
   default     = false
 }
+
+variable "additional_disks" {
+  type = list(object({
+    name        = string
+    size_gb     = number
+    type        = string
+    device_name = string
+    auto_delete = bool
+  }))
+}
+
+variable "additional_disk_sources" {
+  type = map(string)
+}

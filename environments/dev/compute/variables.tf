@@ -1,58 +1,67 @@
 variable "project_id" {
-  type = string
+    type = string
 }
 
 variable "region" {
-  type = string
+    type = string
 }
 
 variable "zone" {
-  type = string
+    type = string
 }
 
 variable "vpc_name" {
-  type = string
+    type = string
 }
 
 variable "subnet_cidr" {
-  type = string
+    type = string
 }
 variable "network" {
-  type = string
+    type = string
 }
 
 variable "subnetwork" {
-  type = string
+    type = string
 }
 
 variable "tags" {
-  type = list(string)
+    type = list(string)
 }
 
 variable "metadata" {
-  type = map(string)
+    type = map(string)
 }
 variable "machine_type" {
-  type = string
+    type = string
 }
 variable "instance_name" {
-  type = string
+    type = string
 }
 variable "firewall_rules" {
+    type = list(object({
+                name          = string
+                description   = optional(string)
+                direction     = optional(string)
+                priority      = optional(number)
+                source_ranges = optional(list(string))
+                target_tags   = optional(list(string))
+                allowed       = list(object({
+                            protocol = string
+                            ports    = optional(list(string))
+                            }))
+                denied = optional(list(object({
+                                protocol = string
+                                ports    = optional(list(string))
+                                })), [])
+                }))
+}
+variable "additional_disks" {
   type = list(object({
-    name          = string
-    description   = optional(string)
-    direction     = optional(string)
-    priority      = optional(number)
-    source_ranges = optional(list(string))
-    target_tags   = optional(list(string))
-    allowed       = list(object({
-      protocol = string
-      ports    = optional(list(string))
-    }))
-    denied = optional(list(object({
-      protocol = string
-      ports    = optional(list(string))
-    })), [])
+    name        = string
+    size_gb     = number
+    type        = string
+    device_name = string
+    auto_delete = bool
   }))
 }

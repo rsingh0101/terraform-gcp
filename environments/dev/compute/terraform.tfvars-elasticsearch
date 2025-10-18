@@ -12,70 +12,87 @@ instance_name = "elasticsearch"
 machine_type  = "e2-highmem-2"
 
 tags = [
-  "elasticsearch"
+    "elasticsearch"
+]
+
+additional_disks = [
+{
+    name        = "es-data-disk"
+        size_gb     = 50
+        type        = "pd-ssd"
+        device_name = "es-data"
+        auto_delete = true
+}
 ]
 
 metadata = {
-  startup-script = <<-EOT
-    #!/bin/bash
-    apt-get update
-    apt-get install -y docker.io docker-compose curl apt-transport-https
+    startup-script = <<-EOT
+#!/bin/bash
+        mkfs.ext4 -F /dev/sdb
+        mkdir -p /mnt/data
+        mount /dev/sdb /mnt/data
+        echo '/dev/sdb /mnt/data ext4 defaults 0 0' >> /etc/fstab
+        apt-get update
+        apt-get install -y docker.io docker-compose curl apt-transport-https
 
-    usermod -aG docker ubuntu
+        usermod -aG docker ubuntu
+        systemctl stop docker
+        mv /var/lib/docker /mnt/data/docker
+        ln -s /mnt/data/docker /var/lib/docker
+        mkdir -p /mnt/data/docker && echo '{"data-root": "/mnt/data/docker"}' > /etc/docker/daemon.json && systemctl restart docker
 
-    # Install Helm
-    curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
-    chmod 700 get_helm.sh
-    ./get_helm.sh
+# Install Helm
+        curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+        chmod 700 get_helm.sh
+        ./get_helm.sh
 
-    # Install kubectl
-    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-    chmod +x kubectl
-    mv ./kubectl /usr/local/bin/kubectl
+# Install kubectl
+        curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+        chmod +x kubectl
+        mv ./kubectl /usr/local/bin/kubectl
 
-    # Install kind
-    cd /home/ubuntu
-    curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.29.0/kind-linux-amd64
-    chmod +x ./kind
-    mv ./kind /usr/local/bin/kind
+        sudo echo "source <( kubectl completion bash)" >> ~/.bashrc
+# Install kind
+        cd /home
+        curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.29.0/kind-linux-amd64
+        chmod +x ./kind
+        mv ./kind /usr/local/bin/kind
 
-    # Create kind cluster
-    cat <<EOF > cluster.yaml
-kind: Cluster
-apiVersion: kind.x-k8s.io/v1alpha4
-nodes:
-  - role: control-plane
-  - role: worker
-EOF
+        kind create cluster
+        sleep 30
+        sudo mkdir ~/.kube
+        sudo kind get kubeconfig > ~/.kube/config
 
-    kind create cluster --config=cluster.yaml
-    sleep 60
+# Install ECK operator
+        helm repo add elastic https://helm.elastic.co
+        helm repo update
+        helm install elastic-operator elastic/eck-operator -n elastic-system --create-namespace
+        sleep 60
 
-    # Install ECK operator
-    helm repo add elastic https://helm.elastic.co
-    helm repo update
-    helm install elastic-operator elastic/eck-operator -n elastic-system --create-namespace
-    sleep 60
+# Apply Filebeat config
+#kubectl apply -f https://raw.githubusercontent.com/elastic/cloud-on-k8s/3.0/config/recipes/beats/filebeat_autodiscover.yaml
+        kubectl apply -f https://raw.githubusercontent.com/elastic/cloud-on-k8s/refs/heads/main/config/recipes/elastic-agent/fleet-custom-logs-integration.yaml
 
-    # Apply Filebeat config
-    kubectl apply -f https://raw.githubusercontent.com/elastic/cloud-on-k8s/3.0/config/recipes/beats/filebeat_autodiscover.yaml
-  EOT
+# Apply Elasticsearch config
+        kubectl port-forward svc/kibana-kb-http 5601 &
+        sudo socat TCP-LISTEN:5602,fork TCP:127.0.0.1:5601 &
+        EOT
 }
 
 firewall_rules = [
-  {
+{
     name          = "allow-elasticsearch"
-    description   = "Allow multiple app endpoints"
-    direction     = "INGRESS"
-    priority      = 1000
-    source_ranges = ["0.0.0.0/0"]
-    target_tags   = ["elasticsearch"]
-    allowed = [
-      {
-        protocol = "tcp"
-        ports    = ["22", "80", "443", "5601", "9200"]
-      }
-    ]
-  }
+        description   = "Allow multiple app endpoints"
+        direction     = "INGRESS"
+        priority      = 1000
+        source_ranges = ["0.0.0.0/0"]
+        target_tags   = ["elasticsearch"]
+        allowed = [
+        {
+            protocol = "tcp"
+                ports    = ["22", "80", "443", "5602", "9201"]
+        }
+        ]
+}
 ]
 

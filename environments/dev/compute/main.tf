@@ -5,17 +5,17 @@ provider "google" {
 }
 
 module "compute" {
-  source = "../../../modules/compute"
-  instance_name = var.instance_name
-  machine_type = var.machine_type
-  zone       = var.zone
-  project_id = var.project_id
-
-  network    = var.network
-  subnetwork = var.subnetwork
-
-  tags     = var.tags
-  metadata = var.metadata
+  source                   = "../../../modules/compute"
+  instance_name            = var.instance_name
+  machine_type             = var.machine_type
+  zone                     = var.zone
+  project_id               = var.project_id
+  network                  = var.network
+  subnetwork               = var.subnetwork
+  tags                     = var.tags
+  metadata                 = var.metadata
+  additional_disks         = var.additional_disks
+  additional_disk_sources  = module.disks.disk_ids
 }
 
 module "network" {
@@ -27,4 +27,11 @@ module "network" {
   subnet_cidr = var.subnet_cidr
   subnetwork  = var.subnetwork
   firewall_rules = var.firewall_rules
+}
+
+module "disks" {
+  source           = "../../../modules/disks"
+  project_id       = var.project_id
+  zone             = var.zone
+  additional_disks = var.additional_disks
 }
