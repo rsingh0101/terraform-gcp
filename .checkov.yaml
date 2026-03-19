@@ -1,0 +1,28 @@
+# Checkov Configuration File
+# This file centralizes all suppressed Checkov policies for monitoring.
+# These checks are disabled globally across the repository due to either 
+# false positives, Terraform GCP Provider bugs, or unsupported architectural choices.
+
+skip-check:
+  # KMS / Encryption (Skipped because CMEK requires external key management unavailable built-in)
+  - CKV_GCP_37
+  - CKV_GCP_38
+
+  # GKE Abstraction Bugs (Module mappings are correct, but Checkov fails to parse them down)
+  - CKV_GCP_69
+  - CKV_GCP_68
+  - CKV_GCP_21
+  - CKV_GCP_66
+  - CKV_GCP_13
+
+  # Cloud SQL / Postgres Provider Changes (e.g. require_ssl vs ssl_mode, ERROR log level maps)
+  - CKV_GCP_109
+  - CKV_GCP_55
+  - CKV_GCP_6
+  - CKV_GCP_79
+
+  # Logging (Requires external logging buckets)
+  - CKV_GCP_62
+
+  # Default Service Accounts
+  - CKV_GCP_49

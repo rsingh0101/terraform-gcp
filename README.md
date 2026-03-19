@@ -1,7 +1,7 @@
 # Production-Grade Terraform for Google Cloud Platform (GCP)
 
 [![Terraform Version](https://img.shields.io/badge/terraform-1.x-blue)](https://www.terraform.io)
-[![CI/CD](https://github.com/rsingh0101/terraform-gcp/actions/workflows/terraform.yml/badge.svg)](https://github.com/rsingh0101/terraform-gcp/actions)
+[![CI/CD](https://github.com/rsingh0101/terraform-gcp/actions/workflows/terraform.yml/badge.svg?branch=main)](https://github.com/rsingh0101/terraform-gcp/actions)
 
 ---
 

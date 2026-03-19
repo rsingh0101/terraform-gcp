@@ -26,6 +26,16 @@ module "gke" {
     workload_pool = "${var.project_id}.svc.id.goog"
   }
 
+  binary_authorization = {
+    evaluation_mode = "PROJECT_SINGLETON_POLICY_ENFORCE"
+  }
+
+  enable_shielded_nodes = true
+
+  master_auth = {
+    client_certificate_config = { issue_client_certificate = false }
+  }
+
   node_pool = [
     {
       name               = "dev-node-pool"
@@ -41,6 +51,14 @@ module "gke" {
         disk_size_gb = 50
         disk_type    = "pd-standard"
         preemptible  = true
+        resource_labels = { environment = "dev" }
+        workload_metadata_config = {
+          mode = "GKE_METADATA"
+        }
+        shielded_instance_config = {
+          enable_secure_boot          = true
+          enable_integrity_monitoring = true
+        }
       }
     }
   ]
