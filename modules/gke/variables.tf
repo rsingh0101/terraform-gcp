@@ -930,7 +930,7 @@ variable "private_ipv6_google_access" {
   description = "The desired state of IPv6 access to Google Services. By default, no private IPv6 access to or from Google Services (all access will be via IPv4)."
   default     = null
   validation {
-    condition = var.private_ipv6_google_access == null || contains([
+    condition = var.private_ipv6_google_access == null ? true : contains([
       "PRIVATE_IPV6_GOOGLE_ACCESS_UNSPECIFIED",
       "PRIVATE_IPV6_GOOGLE_ACCESS_DISABLED",
       "PRIVATE_IPV6_GOOGLE_ACCESS_TO_GOOGLE",
@@ -945,7 +945,7 @@ variable "datapath_provider" {
   description = "The desired datapath provider for this cluster. This is set to LEGACY_DATAPATH by default, which uses the IPTables-based kube-proxy implementation. Set to ADVANCED_DATAPATH to enable Dataplane v2."
   default     = null
   validation {
-    condition = var.datapath_provider == null || contains([
+    condition = var.datapath_provider == null ? true : contains([
       "DATAPATH_PROVIDER_UNSPECIFIED",
       "LEGACY_DATAPATH",
       "ADVANCED_DATAPATH"

@@ -1,5 +1,3 @@
-# environments/dev/variables.tf
-
 variable "project_id" {
   type        = string
   description = "GCP project ID"
@@ -7,7 +5,7 @@ variable "project_id" {
 
 variable "region" {
   type        = string
-  description = "GCP region to deploy resources"
+  description = "GCP region to deploy resources (used as location)"
 }
 
 variable "cluster_name" {
@@ -30,3 +28,14 @@ variable "environment" {
   description = "Environment label (e.g., dev, prod)"
 }
 
+variable "network" {
+  type        = string
+  description = "The VPC network to host the cluster in"
+  default     = "default"
+}
+
+variable "subnetwork" {
+  type        = string
+  description = "The subnetwork to host the cluster in"
+  default     = "default"
+}
