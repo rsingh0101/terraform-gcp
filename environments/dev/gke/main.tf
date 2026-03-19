@@ -4,7 +4,7 @@ provider "google" {
 }
 
 module "gke" {
-  source       = "../../modules/gke"
+  source       = "../../../modules/gke"
   project_id   = var.project_id
   region       = var.region
   cluster_name = var.cluster_name
