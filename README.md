@@ -115,14 +115,6 @@ Contributions are welcome! If you are adding a new module or environment:
 4. Run `terraform fmt -recursive` locally before opening a pull request.
 5. Create a feature branch and open a PR against `main`.
 
----
-
-## License
-
-This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
-
----
-
 ## Contact
 
 Created and maintained by [rsingh0101](https://github.com/rsingh0101)  
