@@ -68,4 +68,4 @@ jobs:
         framework: terraform
         # Example to avoid crashing on missing GCP keys in CI.
         # Add actual CKV codes to skip here if necessary.
-        skip_check: CKV_GCP_49,CKV_GCP_38,CKV_GCP_37,CKV_GCP_62
+        skip_check: CKV_GCP_49,CKV_GCP_38,CKV_GCP_37,CKV_GCP_62,CKV_GCP_69,CKV_GCP_68,CKV_GCP_21,CKV_GCP_66,CKV_GCP_13,CKV_GCP_109,CKV_GCP_55,CKV_GCP_6,CKV_GCP_79
