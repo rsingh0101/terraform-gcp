@@ -31,6 +31,16 @@ module "gke" {
     workload_pool = "<PROJECT ID>.svc.id.goog"
   }
 
+  binary_authorization = {
+    evaluation_mode = "PROJECT_SINGLETON_POLICY_ENFORCE"
+  }
+
+  enable_shielded_nodes = true
+
+  master_auth = {
+    client_certificate_config = { issue_client_certificate = false }
+  }
+
   addons_config = {
     http_load_balancing             = { disabled = true }
     horizontal_pod_autoscaling      = { disabled = false }
@@ -63,7 +73,15 @@ module "gke" {
         preemptible     = false
         tags            = ["default-node-pool"]
         labels          = { default-node-pool = "true" }
-        metadata        = { node-pool-metadata-custom-value = "my-node-pool" }
+        resource_labels = { environment = "prod" }
+        workload_metadata_config = {
+          mode = "GKE_METADATA"
+        }
+        shielded_instance_config = {
+          enable_secure_boot          = true
+          enable_integrity_monitoring = true
+        }
+        metadata = { node-pool-metadata-custom-value = "my-node-pool" }
         taint = [
           {
             key    = "default-node-pool"
