@@ -3,7 +3,7 @@ resource "google_compute_instance" "vm_instance" {
   project      = var.project_id
   zone         = var.zone
   machine_type = var.machine_type
-  metadata     = var.metadata
+  metadata     = merge(var.metadata, { "block-project-ssh-keys" = "true" })
   tags         = var.tags
 
   boot_disk {
@@ -15,7 +15,6 @@ resource "google_compute_instance" "vm_instance" {
   network_interface {
     network    = var.network
     subnetwork = var.subnetwork
-    access_config {}
   }
   dynamic "attached_disk" {
     for_each = var.additional_disks
@@ -29,6 +28,12 @@ resource "google_compute_instance" "vm_instance" {
   service_account {
     email  = var.service_account_email
     scopes = var.scopes
+  }
+
+  shielded_instance_config {
+    enable_secure_boot          = true
+    enable_vtpm                 = true
+    enable_integrity_monitoring = true
   }
 
   scheduling {

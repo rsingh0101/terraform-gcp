@@ -32,6 +32,43 @@ resource "google_sql_database_instance" "master" {
     }
 
     user_labels = var.labels
+
+    database_flags {
+      name  = "log_checkpoints"
+      value = "on"
+    }
+    database_flags {
+      name  = "log_connections"
+      value = "on"
+    }
+    database_flags {
+      name  = "log_disconnections"
+      value = "on"
+    }
+    database_flags {
+      name  = "log_lock_waits"
+      value = "on"
+    }
+    database_flags {
+      name  = "log_min_messages"
+      value = "ERROR"
+    }
+    database_flags {
+      name  = "log_hostname"
+      value = "on"
+    }
+    database_flags {
+      name  = "log_statement"
+      value = "all"
+    }
+    database_flags {
+      name  = "log_duration"
+      value = "on"
+    }
+    database_flags {
+      name  = "cloudsql.enable_pgaudit"
+      value = "on"
+    }
   }
 }
 
