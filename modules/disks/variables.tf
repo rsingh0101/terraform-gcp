@@ -1,8 +1,8 @@
 variable "additional_disks" {
   type = list(object({
-    name        = string
-    size_gb     = number
-    type        = string
+    name    = string
+    size_gb = number
+    type    = string
   }))
 }
 variable "zone" {

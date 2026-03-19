@@ -20,14 +20,14 @@ variable "subnetwork" {
 
 variable "firewall_rules" {
   description = "List of firewall rules"
-  type        = list(object({
+  type = list(object({
     name          = string
     description   = optional(string)
     direction     = optional(string)
     priority      = optional(number)
     source_ranges = optional(list(string))
     target_tags   = optional(list(string))
-    allowed       = list(object({
+    allowed = list(object({
       protocol = string
       ports    = optional(list(string))
     }))

@@ -1,0 +1,31 @@
+project_id     = "my-gcp-project-123456"
+region         = "us-central1"
+zone           = "us-central1-a"
+instance_name  = "dev-compute-instance"
+machine_type   = "e2-medium"
+vpc_name       = "dev-vpc"
+subnet_cidr    = "10.0.1.0/24"
+network        = "dev-vpc"
+subnetwork     = "dev-subnet"
+tags           = ["web", "dev"]
+metadata       = { environment = "dev" }
+
+firewall_rules = [
+  {
+    name          = "allow-ssh-dev"
+    description   = "Allow SSH"
+    direction     = "INGRESS"
+    source_ranges = ["0.0.0.0/0"]
+    allowed       = [{ protocol = "tcp", ports = ["22"] }]
+  }
+]
+
+additional_disks = [
+  {
+    name        = "data-disk-dev"
+    size_gb     = 50
+    type        = "pd-ssd"
+    device_name = "data-disk-dev"
+    auto_delete = false
+  }
+]

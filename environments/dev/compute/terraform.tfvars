@@ -1,12 +1,12 @@
-project_id   = "aqueous-scout-444117-j2"
-region       = "us-central1"
-zone         = "us-central1-a"
+project_id = "aqueous-scout-444117-j2"
+region     = "us-central1"
+zone       = "us-central1-a"
 
-vpc_name     = "my-vpc"
-subnet_cidr  = "10.0.0.0/16"
+vpc_name    = "my-vpc"
+subnet_cidr = "10.0.0.0/16"
 
-network      = "my-vpc"
-subnetwork   = "my-subnet"
+network    = "my-vpc"
+subnetwork = "my-subnet"
 
 instance_name = "benchmark"
 machine_type  = "e2-medium"
@@ -32,16 +32,16 @@ metadata = {
 
 firewall_rules = [
   {
-    name        = "allow-benchmark"
-    description = "Allow multiple app endpoints"
-    direction   = "INGRESS"
-    priority    = 1000
+    name          = "allow-benchmark"
+    description   = "Allow multiple app endpoints"
+    direction     = "INGRESS"
+    priority      = 1000
     source_ranges = ["0.0.0.0/0"]
     target_tags   = ["benchmark"]
     allowed = [
       {
         protocol = "tcp"
-        ports    = ["22","80","443","3000","9090"]
+        ports    = ["22", "80", "443", "3000", "9090"]
       }
     ]
   }

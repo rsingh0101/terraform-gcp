@@ -1,23 +1,23 @@
 resource "google_compute_instance" "vm_instance" {
-    name         = var.instance_name
-        project      = var.project_id
-        zone         = var.zone
-        machine_type = var.machine_type
-        metadata = var.metadata
-        tags = var.tags
+  name         = var.instance_name
+  project      = var.project_id
+  zone         = var.zone
+  machine_type = var.machine_type
+  metadata     = var.metadata
+  tags         = var.tags
 
-        boot_disk {
-            initialize_params {
-                image = var.boot_disk_image
-            }
-        }
-
-    network_interface {
-        network    = var.network
-            subnetwork = var.subnetwork
-            access_config {}
+  boot_disk {
+    initialize_params {
+      image = var.boot_disk_image
     }
-    dynamic "attached_disk" {
+  }
+
+  network_interface {
+    network    = var.network
+    subnetwork = var.subnetwork
+    access_config {}
+  }
+  dynamic "attached_disk" {
     for_each = var.additional_disks
     content {
       device_name = attached_disk.value.device_name
@@ -26,13 +26,13 @@ resource "google_compute_instance" "vm_instance" {
     }
   }
 
-    service_account {
-        email  = var.service_account_email
-            scopes = var.scopes
-    }
+  service_account {
+    email  = var.service_account_email
+    scopes = var.scopes
+  }
 
-    scheduling {
-        preemptible = var.preemptible
-            automatic_restart= var.automatic_restart
-    }
+  scheduling {
+    preemptible       = var.preemptible
+    automatic_restart = var.automatic_restart
+  }
 }

@@ -1,62 +1,80 @@
 variable "project_id" {
-    type = string
+  description = "The ID of the GCP project where resources will be created."
+  type        = string
 }
 
 variable "region" {
-    type = string
+  description = "The default GCP region for the resources."
+  type        = string
 }
 
 variable "zone" {
-    type = string
+  description = "The default GCP zone for the compute resources."
+  type        = string
 }
 
 variable "vpc_name" {
-    type = string
+  description = "The name of the VPC network to create."
+  type        = string
 }
 
 variable "subnet_cidr" {
-    type = string
+  description = "The CIDR block for the subnetwork."
+  type        = string
 }
+
 variable "network" {
-    type = string
+  description = "The network to attach to the compute instance."
+  type        = string
 }
 
 variable "subnetwork" {
-    type = string
+  description = "The subnetwork to attach to the compute instance."
+  type        = string
 }
 
 variable "tags" {
-    type = list(string)
+  description = "A list of network tags to attach to the instance."
+  type        = list(string)
 }
 
 variable "metadata" {
-    type = map(string)
+  description = "Metadata key/value pairs to make available from within the instance."
+  type        = map(string)
 }
+
 variable "machine_type" {
-    type = string
+  description = "The machine type to create."
+  type        = string
 }
+
 variable "instance_name" {
-    type = string
+  description = "The name of the compute instance."
+  type        = string
 }
+
 variable "firewall_rules" {
-    type = list(object({
-                name          = string
-                description   = optional(string)
-                direction     = optional(string)
-                priority      = optional(number)
-                source_ranges = optional(list(string))
-                target_tags   = optional(list(string))
-                allowed       = list(object({
-                            protocol = string
-                            ports    = optional(list(string))
-                            }))
-                denied = optional(list(object({
-                                protocol = string
-                                ports    = optional(list(string))
-                                })), [])
-                }))
+  description = "List of firewall rules to apply to the network."
+  type = list(object({
+    name          = string
+    description   = optional(string)
+    direction     = optional(string)
+    priority      = optional(number)
+    source_ranges = optional(list(string))
+    target_tags   = optional(list(string))
+    allowed = list(object({
+      protocol = string
+      ports    = optional(list(string))
+    }))
+    denied = optional(list(object({
+      protocol = string
+      ports    = optional(list(string))
+    })), [])
+  }))
 }
+
 variable "additional_disks" {
+  description = "List of additional persistent disks to attach to the instance."
   type = list(object({
     name        = string
     size_gb     = number
