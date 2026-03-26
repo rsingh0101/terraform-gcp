@@ -3,25 +3,76 @@ provider "google" {
   region  = var.region
 }
 
+module "firewall" {
+  source     = "../../../modules/firewall"
+  project_id = var.project_id
+  network    = module.network.vpc_name
+
+  rules = [
+    {
+      name        = "allow-ssh"
+      description = "Allow SSH from trusted IP"
+      source_ranges = var.ssh_source_ranges
+
+      allow = [
+        {
+          protocol = "tcp"
+          ports    = ["22"]
+        }
+      ]
+    },
+    {
+      name      = "allow-internal"
+      priority  = 1000
+      direction = "INGRESS"
+      source_ranges = ["10.0.0.0/8"]
+
+      allow = [
+        {
+          protocol = "tcp"
+        },
+        {
+          protocol = "udp"
+        },
+        {
+          protocol = "icmp"
+        }
+      ]
+    }
+  ]
+}
+
+module "network" {
+  source     = "../../../modules/network"
+  project_id = var.project_id
+  region     = var.region
+  subnetwork = var.subnetwork
+  subnet_cidr = var.subnetwork_cidr
+  vpc_name = var.vpc_name
+}
+
 module "gke" {
   source     = "../../../modules/gke"
   project_id = var.project_id
   name       = var.cluster_name
   location   = var.region
-  network    = var.network
-  subnetwork = var.subnetwork
+  network    = module.network.vpc_name
+  subnetwork = module.network.subnet_id
 
-  master_authorized_networks_config = {
-    cidr_blocks = [
-      {
-        display_name = "all"
-        cidr_block   = "0.0.0.0/0"
-      }
-    ]
-    gcp_public_cidrs_access_enabled      = true
-    private_endpoint_enforcement_enabled = false
-  }
-
+  # master_authorized_networks_config = {
+  #   cidr_blocks = [
+  #     {
+  #       display_name = "all"
+  #       cidr_block   = "49.37.120.55/32"
+  #     }
+  #   ]
+  #   # gcp_public_cidrs_access_enabled      = true
+  #   private_endpoint_enforcement_enabled = false
+  # }
+  private_cluster_config = {
+  enable_private_nodes    = true
+  enable_private_endpoint = false
+}
   workload_identity_config = {
     workload_pool = "${var.project_id}.svc.id.goog"
   }

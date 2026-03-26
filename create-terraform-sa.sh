@@ -14,6 +14,7 @@ ROLES=(
   "roles/compute.storageAdmin"
   "roles/storage.admin"
   "roles/storage.objectAdmin"
+  "roles/container.admin"
 )
 
 echo "Creating service account: $SA_NAME"

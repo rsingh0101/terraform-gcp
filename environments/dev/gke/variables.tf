@@ -39,3 +39,20 @@ variable "subnetwork" {
   description = "The subnetwork to host the cluster in"
   default     = "default"
 }
+
+
+variable "vpc_name" {
+  type        = string
+  description = "Name of the VPC network to create"
+  default     = "dev-vpc"
+}
+
+variable "subnetwork_cidr" {
+  type        = string
+  description = "CIDR range for the subnetwork"
+  default     = "10.200.0.0/16"
+}
+
+variable "ssh_source_ranges" {
+  type = list(string)
+}

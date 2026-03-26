@@ -1,6 +1,6 @@
 terraform {
   backend "gcs" {
-    bucket = "replace-with-your-terraform-state-bucket"
+    bucket = "my-bucket-aqueous"
     prefix = "terraform/state/dev/gke"
   }
 }

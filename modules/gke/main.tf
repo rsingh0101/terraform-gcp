@@ -346,20 +346,25 @@ resource "google_container_cluster" "main" {
     }
   }
 
+  
   dynamic "master_authorized_networks_config" {
-    for_each = var.master_authorized_networks_config != null ? [var.master_authorized_networks_config] : []
+  for_each = var.master_authorized_networks_config == null ? [] : [var.master_authorized_networks_config]
 
-    content {
-      gcp_public_cidrs_access_enabled = master_authorized_networks_config.value.gcp_public_cidrs_access_enabled
-      dynamic "cidr_blocks" {
-        for_each = master_authorized_networks_config.value.cidr_blocks != null ? master_authorized_networks_config.value.cidr_blocks : []
-        content {
-          display_name = cidr_blocks.value.display_name
-          cidr_block   = cidr_blocks.value.cidr_block
-        }
+  content {
+    gcp_public_cidrs_access_enabled = try(
+      master_authorized_networks_config.value.gcp_public_cidrs_access_enabled,
+      false
+    )
+
+    dynamic "cidr_blocks" {
+      for_each = try(master_authorized_networks_config.value.cidr_blocks, [])
+      content {
+        display_name = cidr_blocks.value.display_name
+        cidr_block   = cidr_blocks.value.cidr_block
       }
     }
   }
+}
 
   dynamic "monitoring_config" {
     for_each = var.monitoring_config != null ? [var.monitoring_config] : []
@@ -644,9 +649,8 @@ resource "google_container_cluster" "main" {
     content {
       name               = node_pool.value.name
       node_count         = node_pool.value.node_count
-      version            = node_pool.value.version
+      version            = try(node_pool.value.version,null)
       node_locations     = node_pool.value.node_locations
-      initial_node_count = node_pool.value.initial_node_count
       max_pods_per_node  = node_pool.value.max_pods_per_node
 
       dynamic "autoscaling" {
@@ -732,7 +736,7 @@ resource "google_container_cluster" "main" {
           }
 
           dynamic "secondary_boot_disks" {
-            for_each = node_config.value.secondary_boot_disks != null ? node_config.value.secondary_boot_disks : []
+            for_each = node_config.value.secondary_boot_disks != null ? [node_config.value.secondary_boot_disks] : []
             content {
               disk_image = secondary_boot_disks.value.disk_image
               mode       = secondary_boot_disks.value.mode
@@ -754,7 +758,7 @@ resource "google_container_cluster" "main" {
           }
 
           dynamic "guest_accelerator" {
-            for_each = node_config.value.guest_accelerator != null ? node_config.value.guest_accelerator : []
+            for_each = node_config.value.guest_accelerator != null ? [node_config.value.guest_accelerator] : []
             content {
               type               = guest_accelerator.value.type
               count              = guest_accelerator.value.count
@@ -1080,7 +1084,7 @@ resource "google_container_cluster" "main" {
         content {
           enabled = ip_endpoints_config.value.enabled
         }
-      }
+      } 
     }
   }
 

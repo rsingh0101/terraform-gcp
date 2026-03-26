@@ -317,6 +317,7 @@ variable "master_authorized_networks_config" {
     gcp_public_cidrs_access_enabled      = optional(bool)
     private_endpoint_enforcement_enabled = optional(bool)
   })
+  default = null
 }
 
 variable "min_master_version" {
@@ -510,7 +511,6 @@ variable "node_pool" {
     node_count         = optional(number, 1)
     kubernetes_version = optional(string, null)
     node_locations     = optional(list(string), [])
-    initial_node_count = optional(number, null)
     max_pods_per_node  = optional(number, null)
 
     autoscaling = optional(object({
@@ -804,7 +804,7 @@ variable "private_cluster_config" {
   description = "Configuration for private clusters, clusters with private nodes."
   type = object({
     enable_private_nodes        = optional(bool)
-    enable_private_endpoint     = optional(bool)
+    enable_private_endpoint     = optional(bool,false)
     master_ipv4_cidr_block      = optional(string)
     private_endpoint_subnetwork = optional(string)
     master_global_access_config = optional(object({
