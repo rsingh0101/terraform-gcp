@@ -81,7 +81,8 @@ module "gke" {
   location   = var.region
   network    = module.network.vpc_name
   subnetwork = module.network.subnet_id
-
+  remove_default_node_pool = true
+  initial_node_count       = 1
   # master_authorized_networks_config = {
   #   cidr_blocks = [
   #     {
@@ -115,7 +116,7 @@ module "gke" {
 resource "google_container_node_pool" "primary_nodes" {
   name       = "dev-node-pool"
   location   = var.region
-  cluster    = module.gke.name
+  cluster    = module.gke.cluster_name
   project    = var.project_id
   node_count = var.initial_node_count
 
