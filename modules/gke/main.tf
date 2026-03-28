@@ -36,7 +36,7 @@ resource "google_container_cluster" "main" {
   enable_legacy_abac        = var.enable_legacy_abac
   enable_shielded_nodes     = var.enable_shielded_nodes
   initial_node_count        = var.initial_node_count
-  remove_default_node_pool = var.remove_default_node_pool
+  remove_default_node_pool  = var.remove_default_node_pool
   min_master_version        = var.min_master_version
   logging_service           = var.logging_service
   monitoring_service        = var.monitoring_service
@@ -347,25 +347,25 @@ resource "google_container_cluster" "main" {
     }
   }
 
-  
+
   dynamic "master_authorized_networks_config" {
-  for_each = var.master_authorized_networks_config == null ? [] : [var.master_authorized_networks_config]
+    for_each = var.master_authorized_networks_config == null ? [] : [var.master_authorized_networks_config]
 
-  content {
-    gcp_public_cidrs_access_enabled = try(
-      master_authorized_networks_config.value.gcp_public_cidrs_access_enabled,
-      false
-    )
+    content {
+      gcp_public_cidrs_access_enabled = try(
+        master_authorized_networks_config.value.gcp_public_cidrs_access_enabled,
+        false
+      )
 
-    dynamic "cidr_blocks" {
-      for_each = try(master_authorized_networks_config.value.cidr_blocks, [])
-      content {
-        display_name = cidr_blocks.value.display_name
-        cidr_block   = cidr_blocks.value.cidr_block
+      dynamic "cidr_blocks" {
+        for_each = try(master_authorized_networks_config.value.cidr_blocks, [])
+        content {
+          display_name = cidr_blocks.value.display_name
+          cidr_block   = cidr_blocks.value.cidr_block
+        }
       }
     }
   }
-}
 
   dynamic "monitoring_config" {
     for_each = var.monitoring_config != null ? [var.monitoring_config] : []
@@ -648,11 +648,11 @@ resource "google_container_cluster" "main" {
     for_each = var.node_pool != null ? var.node_pool : []
 
     content {
-      name               = node_pool.value.name
-      node_count         = node_pool.value.node_count
-      version            = try(node_pool.value.version,null)
-      node_locations     = node_pool.value.node_locations
-      max_pods_per_node  = node_pool.value.max_pods_per_node
+      name              = node_pool.value.name
+      node_count        = node_pool.value.node_count
+      version           = try(node_pool.value.version, null)
+      node_locations    = node_pool.value.node_locations
+      max_pods_per_node = node_pool.value.max_pods_per_node
 
       dynamic "autoscaling" {
         for_each = node_pool.value.autoscaling != null ? [node_pool.value.autoscaling] : []
@@ -1085,7 +1085,7 @@ resource "google_container_cluster" "main" {
         content {
           enabled = ip_endpoints_config.value.enabled
         }
-      } 
+      }
     }
   }
 

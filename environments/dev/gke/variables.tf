@@ -58,7 +58,7 @@ variable "ssh_source_ranges" {
 }
 
 variable "remove_default_node_pool" {
-  type = string
+  type        = string
   description = "Remove default node pool or not"
-  default = true
+  default     = true
 }

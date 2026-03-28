@@ -804,7 +804,7 @@ variable "private_cluster_config" {
   description = "Configuration for private clusters, clusters with private nodes."
   type = object({
     enable_private_nodes        = optional(bool)
-    enable_private_endpoint     = optional(bool,false)
+    enable_private_endpoint     = optional(bool, false)
     master_ipv4_cidr_block      = optional(string)
     private_endpoint_subnetwork = optional(string)
     master_global_access_config = optional(object({

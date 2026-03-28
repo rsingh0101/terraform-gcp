@@ -11,8 +11,8 @@ module "firewall" {
 
   rules = [
     {
-      name        = "allow-ssh"
-      description = "Allow SSH from trusted IP"
+      name          = "allow-ssh"
+      description   = "Allow SSH from trusted IP"
       source_ranges = var.ssh_source_ranges
 
       allow = [
@@ -23,9 +23,9 @@ module "firewall" {
       ]
     },
     {
-      name      = "allow-internal"
-      priority  = 1000
-      direction = "INGRESS"
+      name          = "allow-internal"
+      priority      = 1000
+      direction     = "INGRESS"
       source_ranges = ["10.0.0.0/8"]
 
       allow = [
@@ -44,12 +44,12 @@ module "firewall" {
 }
 
 module "network" {
-  source     = "../../../modules/network"
-  project_id = var.project_id
-  region     = var.region
-  subnetwork = var.subnetwork
+  source      = "../../../modules/network"
+  project_id  = var.project_id
+  region      = var.region
+  subnetwork  = var.subnetwork
   subnet_cidr = var.subnetwork_cidr
-  vpc_name = var.vpc_name
+  vpc_name    = var.vpc_name
 }
 
 resource "google_compute_router" "router" {
@@ -69,7 +69,7 @@ resource "google_compute_router_nat" "nat" {
   region                             = var.region
   nat_ip_allocate_option             = "AUTO_ONLY"
   source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
-  depends_on = [google_compute_router.router]
+  depends_on                         = [google_compute_router.router]
 }
 
 
@@ -92,9 +92,9 @@ module "gke" {
   #   private_endpoint_enforcement_enabled = false
   # }
   private_cluster_config = {
-  enable_private_nodes    = true
-  enable_private_endpoint = false
-}
+    enable_private_nodes    = true
+    enable_private_endpoint = false
+  }
   workload_identity_config = {
     workload_pool = "${var.project_id}.svc.id.goog"
   }
@@ -111,8 +111,8 @@ module "gke" {
 
   node_pool = [
     {
-      name               = "dev-node-pool"
-      initial_node_count = var.initial_node_count
+      name                     = "dev-node-pool"
+      initial_node_count       = var.initial_node_count
       remove_default_node_pool = var.remove_default_node_pool
       management = {
         auto_repair  = true
@@ -120,10 +120,10 @@ module "gke" {
       }
 
       node_config = {
-        machine_type = var.machine_type
-        disk_size_gb = 50
-        disk_type    = "pd-standard"
-        preemptible  = true
+        machine_type    = var.machine_type
+        disk_size_gb    = 50
+        disk_type       = "pd-standard"
+        preemptible     = true
         resource_labels = { environment = "dev" }
         workload_metadata_config = {
           mode = "GKE_METADATA"
