@@ -8,7 +8,7 @@ module "firewall" {
   source     = "../../../modules/firewall"
   project_id = var.project_id
   network    = module.network.vpc_name
-
+  depends_on = [module.network]
   rules = [
     {
       name          = "allow-ssh"
@@ -110,30 +110,35 @@ module "gke" {
     client_certificate_config = { issue_client_certificate = false }
   }
 
-  node_pool = [
-    {
-      name                     = "dev-node-pool"
-      initial_node_count       = var.initial_node_count
-      remove_default_node_pool = var.remove_default_node_pool
-      management = {
-        auto_repair  = true
-        auto_upgrade = true
-      }
+}
 
-      node_config = {
-        machine_type    = var.machine_type
-        disk_size_gb    = 50
-        disk_type       = "pd-standard"
-        preemptible     = true
-        resource_labels = { environment = "dev" }
-        workload_metadata_config = {
-          mode = "GKE_METADATA"
-        }
-        shielded_instance_config = {
-          enable_secure_boot          = true
-          enable_integrity_monitoring = true
-        }
-      }
+resource "google_container_node_pool" "primary_nodes" {
+  name       = "dev-node-pool"
+  location   = var.region
+  cluster    = google_container_cluster.main.name
+  project    = var.project_id
+  node_count = var.initial_node_count
+
+  management {
+    auto_repair  = true
+    auto_upgrade = true
+  }
+
+  node_config {
+    machine_type = var.machine_type
+    preemptible  = true
+    
+    # Shielded VM settings to satisfy other security checks
+    shielded_instance_config {
+      enable_secure_boot          = true
+      enable_integrity_monitoring = true
     }
-  ]
+
+    # Best practice: use a specific service account instead of default
+    # service_account = var.service_account 
+    
+    oauth_scopes = [
+      "https://www.googleapis.com/auth/cloud-platform"
+    ]
+  }
 }
