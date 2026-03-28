@@ -3,6 +3,7 @@ provider "google" {
   region  = var.region
 }
 
+
 module "firewall" {
   source     = "../../../modules/firewall"
   project_id = var.project_id
@@ -51,6 +52,27 @@ module "network" {
   vpc_name = var.vpc_name
 }
 
+resource "google_compute_router" "router" {
+  name    = "nat-router"
+  network = module.network.vpc_name
+  region  = var.region
+
+  bgp {
+    asn = 64514
+  }
+  depends_on = [module.network]
+}
+
+resource "google_compute_router_nat" "nat" {
+  name                               = "nat-config"
+  router                             = google_compute_router.router.name
+  region                             = var.region
+  nat_ip_allocate_option             = "AUTO_ONLY"
+  source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
+  depends_on = [google_compute_router.router]
+}
+
+
 module "gke" {
   source     = "../../../modules/gke"
   project_id = var.project_id
@@ -90,8 +112,8 @@ module "gke" {
   node_pool = [
     {
       name               = "dev-node-pool"
-      initial_node_count = var.node_count
-
+      initial_node_count = var.initial_node_count
+      remove_default_node_pool = var.remove_default_node_pool
       management = {
         auto_repair  = true
         auto_upgrade = true

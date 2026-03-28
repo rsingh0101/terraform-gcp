@@ -36,6 +36,7 @@ resource "google_container_cluster" "main" {
   enable_legacy_abac        = var.enable_legacy_abac
   enable_shielded_nodes     = var.enable_shielded_nodes
   initial_node_count        = var.initial_node_count
+  remove_default_node_pool = var.remove_default_node_pool
   min_master_version        = var.min_master_version
   logging_service           = var.logging_service
   monitoring_service        = var.monitoring_service
@@ -1118,8 +1119,6 @@ resource "google_container_cluster" "main" {
       channel = release_channel.value.channel
     }
   }
-
-  remove_default_node_pool = var.remove_default_node_pool
 
 
   dynamic "cost_management_config" {

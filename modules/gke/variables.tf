@@ -839,7 +839,7 @@ variable "release_channel" {
 variable "remove_default_node_pool" {
   description = "If true, deletes the default node pool upon cluster creation. If you're using google_container_node_pool resources with no default node pool, this should be set to true."
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "resource_labels" {

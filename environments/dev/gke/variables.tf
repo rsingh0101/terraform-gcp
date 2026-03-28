@@ -13,7 +13,7 @@ variable "cluster_name" {
   description = "Name of the GKE cluster"
 }
 
-variable "node_count" {
+variable "initial_node_count" {
   type    = number
   default = 1
 }
@@ -55,4 +55,10 @@ variable "subnetwork_cidr" {
 
 variable "ssh_source_ranges" {
   type = list(string)
+}
+
+variable "remove_default_node_pool" {
+  type = string
+  description = "Remove default node pool or not"
+  default = true
 }
