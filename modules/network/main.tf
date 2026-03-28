@@ -19,3 +19,17 @@ resource "google_compute_subnetwork" "subnet" {
     metadata             = "INCLUDE_ALL_METADATA"
   }
 }
+
+resource "google_compute_firewall" "default_deny_all" {
+  name     = "${var.vpc_name}-default-deny-all"
+  network  = google_compute_network.vpc.name
+  project  = var.project_id
+  priority = 65535
+  direction = "INGRESS"
+
+  deny {
+    protocol = "all"
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+}

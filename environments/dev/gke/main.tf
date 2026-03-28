@@ -3,6 +3,13 @@ provider "google" {
   region  = var.region
 }
 
+resource "google_compute_route" "egress_internet" {
+  name             = "egress-internet"
+  dest_range       = "0.0.0.0/0"
+  network          = module.network.vpc_name
+  next_hop_gateway = "default-internet-gateway"
+  priority         = 1000
+}
 
 module "firewall" {
   source     = "../../../modules/firewall"
