@@ -50,6 +50,7 @@ module "network" {
   subnetwork  = var.subnetwork
   subnet_cidr = var.subnetwork_cidr
   vpc_name    = var.vpc_name
+  firewall_rules = var.firewall_rules
 }
 
 resource "google_compute_router" "router" {

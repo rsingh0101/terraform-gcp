@@ -62,3 +62,9 @@ variable "remove_default_node_pool" {
   description = "Remove default node pool or not"
   default     = true
 }
+
+variable "firewall_rules" {
+  description = "List of firewall rules"
+  type        = any
+  default     = [] # Providing a default empty list prevents this error if no rules are needed
+}

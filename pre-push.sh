@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-# set -o pipefail
-# set -x 
 echo "🔍 Running pre-push Terraform checks..."
 
 RED='\033[0;31m'
@@ -11,46 +9,54 @@ NC='\033[0m'
 
 FAILED=0
 
-CHANGED_FILES=$(git diff --name-only --diff-filter=ACM | grep -E '\.tf$' || true)
-CHANGED_DIRS=$(echo "$CHANGED_FILES" | xargs -r dirname | sort -u)
+# Get staged Terraform files
+CHANGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.tf$' || true)
 
-if [ -z "$CHANGED_DIRS" ]; then
-  echo "⚠️ No Terraform changes detected. Skipping checks."
-  exit 0
-fi 
-
-if [ -z "$CHANGED_DIRS" ]; then
-  echo -e "${YELLOW}No staged Terraform changes, checking all Terraform dirs...${NC}"
-  CHANGED_DIRS=$(find environments modules -type f -name "*.tf" -exec dirname {} \; | sort -u)
+if [ -z "$CHANGED_FILES" ]; then
+    echo -e "${YELLOW}⚠️ No Terraform changes detected. Skipping checks.${NC}"
+    exit 0
 fi
 
-echo "📁 Checking directories:"
-echo "$CHANGED_DIRS"
+# Get unique directories containing .tf files
+CHANGED_DIRS=$(echo "$CHANGED_FILES" | xargs -I {} dirname {} | sort -u)
 
 for dir in $CHANGED_DIRS; do
-  if [ -f "$dir/main.tf" ]; then
-    echo "--------------------------------------------------------"
-    echo "📦 Checking: $dir"
-    echo "--------------------------------------------------------"
+    # Skip if it's just the root or doesn't exist
+    if [ ! -d "$dir" ] || [ "$dir" == "." ]; then continue; fi
 
-    pushd "$dir" > /dev/null
+    echo -e "\n${YELLOW}--------------------------------------------------------${NC}"
+    echo -e "📦 Checking: ${GREEN}$dir${NC}"
+    echo -e "${YELLOW}--------------------------------------------------------${NC}"
 
-    terraform fmt -recursive || FAILED=1
-    terraform init -backend=false -upgrade -input=false > /dev/null || FAILED=1
+    pushd "$dir" > /dev/null || continue
 
+    # 1. Format Check
+    if ! terraform fmt -check; then
+        echo -e "${RED}❌ terraform fmt failed in $dir. Run 'terraform fmt' to fix.${NC}"
+        FAILED=1
+    fi
+
+    # 2. Initialize (Required for validation to work with modules)
+    # We use -backend=false for speed
+    if ! terraform init -backend=false -input=false -upgrade > /dev/null 2>&1; then
+        echo -e "${RED}❌ terraform init failed in $dir${NC}"
+        FAILED=1
+    fi
+
+    # 3. Validate
     if ! terraform validate; then
-      FAILED=1
+        echo -e "${RED}❌ terraform validate failed in $dir${NC}"
+        FAILED=1
     else
-      echo -e "${GREEN}✅ $dir is valid${NC}"
+        echo -e "${GREEN}✅ $dir is valid${NC}"
     fi
 
     popd > /dev/null
-  fi
 done
 
 if [ "$FAILED" -ne 0 ]; then
-  echo -e "${RED}🚫 Terraform checks failed. Push blocked.${NC}"
-  exit 1
+    echo -e "\n${RED}🚫 Terraform checks failed. Push blocked.${NC}"
+    exit 1
 fi
 
-echo -e "${GREEN}🎉 All Terraform checks passed. Safe to push.${NC}"
+echo -e "\n${GREEN}🎉 All Terraform checks passed. Safe to push.${NC}"
