@@ -2,6 +2,7 @@ resource "google_compute_network" "vpc" {
   project                 = var.project_id
   name                    = var.vpc_name
   auto_create_subnetworks = false
+  delete_default_routes_on_create = false
 }
 
 resource "google_compute_subnetwork" "subnet" {
