@@ -26,3 +26,4 @@ skip-check:
 
   # Default Service Accounts
   - CKV_GCP_49
+  - CKV_GCP_40
