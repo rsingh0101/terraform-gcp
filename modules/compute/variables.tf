@@ -84,16 +84,6 @@ variable "automatic_restart" {
   default     = false
 }
 
-variable "additional_disks" {
-  type = list(object({
-    name        = string
-    size_gb     = number
-    type        = string
-    device_name = string
-    auto_delete = bool
-  }))
-}
-
-variable "additional_disk_sources" {
+variable "additional_disk_source" {
   type = map(string)
 }

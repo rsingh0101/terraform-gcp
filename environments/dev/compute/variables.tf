@@ -23,6 +23,10 @@ variable "subnet_cidr" {
   type        = string
 }
 
+variable "boot_disk_image" {
+  type = string
+}
+
 variable "network" {
   description = "The network to attach to the compute instance."
   type        = string
@@ -73,7 +77,7 @@ variable "firewall_rules" {
   }))
 }
 
-variable "additional_disks" {
+variable "additional_disk" {
   description = "List of additional persistent disks to attach to the instance."
   type = list(object({
     name        = string

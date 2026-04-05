@@ -1,5 +1,5 @@
-resource "google_compute_disk" "additional" {
-  for_each = { for d in var.additional_disks : d.name => d }
+resource "google_compute_disk" "disks" {
+  for_each = { for d in var.additional_disk : d.name => d }
 
   name = each.value.name
   type = each.value.type

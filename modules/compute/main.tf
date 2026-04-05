@@ -15,12 +15,15 @@ resource "google_compute_instance" "vm_instance" {
   network_interface {
     network    = var.network
     subnetwork = var.subnetwork
+    access_config {
+      # empty block = ephemeral public IP
+    }
   }
   dynamic "attached_disk" {
-    for_each = var.additional_disks
+    for_each = var.additional_disk_source
     content {
-      device_name = attached_disk.value.device_name
-      source      = var.additional_disk_sources[attached_disk.value.name]
+      device_name = attached_disk.key
+      source      = attached_disk.value
       mode        = "READ_WRITE"
     }
   }

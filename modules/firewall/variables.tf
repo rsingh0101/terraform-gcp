@@ -19,7 +19,7 @@ variable "rules" {
     destination_ranges = optional(list(string), [])
     target_tags        = optional(list(string), [])
 
-    allow = optional(list(object({
+    allowed = optional(list(object({
       protocol = string
       ports    = optional(list(string))
     })), [])

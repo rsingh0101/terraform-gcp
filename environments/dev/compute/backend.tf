@@ -1,6 +1,6 @@
 terraform {
   backend "gcs" {
-    bucket = "replace-with-your-terraform-state-bucket"
+    bucket = "terraform-aqueous-scout-444117-j2"
     prefix = "terraform/state/dev/compute"
   }
 }

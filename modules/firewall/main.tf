@@ -14,11 +14,12 @@ resource "google_compute_firewall" "rules" {
   target_tags        = try(each.value.target_tags, [])
 
   dynamic "allow" {
-    for_each = try(each.value.allow, [])
+    for_each = try(each.value.allowed, [])
     content {
       protocol = allow.value.protocol
       ports    = try(allow.value.ports, null)
     }
+    
   }
 
   dynamic "deny" {

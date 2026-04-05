@@ -1,4 +1,4 @@
-variable "additional_disks" {
+variable "additional_disk" {
   type = list(object({
     name    = string
     size_gb = number

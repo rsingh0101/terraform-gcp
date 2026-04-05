@@ -21,6 +21,8 @@ resource "google_compute_subnetwork" "subnet" {
 }
 
 resource "google_compute_firewall" "default_deny_all" {
+  count    = var.enable_default_firewall ? 1 : 0
+
   name     = "${var.vpc_name}-default-deny-all"
   network  = google_compute_network.vpc.name
   project  = var.project_id
@@ -32,4 +34,22 @@ resource "google_compute_firewall" "default_deny_all" {
   }
 
   source_ranges = ["0.0.0.0/0"]
+}
+
+resource "google_compute_firewall" "allow_internal" {
+  count   = var.enable_default_firewall ? 1 : 0
+  name    = "${var.vpc_name}-allow-internal"
+  network = google_compute_network.vpc.name
+
+  allow {
+    protocol = "tcp"
+    ports    = ["0-65535"]
+  }
+
+  allow {
+    protocol = "udp"
+    ports    = ["0-65535"]
+  }
+
+  source_ranges = [var.subnet_cidr]
 }
