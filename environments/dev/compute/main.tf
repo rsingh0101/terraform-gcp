@@ -14,7 +14,8 @@ module "compute" {
   subnetwork              = module.network.subnet_name
   tags                    = var.tags
   metadata                = var.metadata
-  additional_disk_source = module.disk.disk_ids
+  additional_disk_source  = module.disk.disk_ids
+  enable_public_ip        = true
 }
 
 module "network" {

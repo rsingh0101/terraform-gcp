@@ -15,8 +15,10 @@ resource "google_compute_instance" "vm_instance" {
   network_interface {
     network    = var.network
     subnetwork = var.subnetwork
-    access_config {
+    dynamic "access_config" {
       # empty block = ephemeral public IP
+      for_each = var.enable_public_ip ? [1] : []
+      content {}
     }
   }
   dynamic "attached_disk" {

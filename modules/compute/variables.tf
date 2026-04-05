@@ -87,3 +87,8 @@ variable "automatic_restart" {
 variable "additional_disk_source" {
   type = map(string)
 }
+
+variable "enable_public_ip" {
+  type    = bool
+  default = false
+}
