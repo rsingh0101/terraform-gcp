@@ -15,49 +15,18 @@ module "firewall" {
   source     = "../../../modules/firewall"
   project_id = var.project_id
   network    = module.network.vpc_name
-  depends_on = [module.network]
-  rules = [
-    {
-      name          = "allow-ssh"
-      description   = "Allow SSH from trusted IP"
-      source_ranges = var.ssh_source_ranges
-
-      allow = [
-        {
-          protocol = "tcp"
-          ports    = ["22"]
-        }
-      ]
-    },
-    {
-      name          = "allow-internal"
-      priority      = 1000
-      direction     = "INGRESS"
-      source_ranges = ["10.0.0.0/8"]
-
-      allow = [
-        {
-          protocol = "tcp"
-        },
-        {
-          protocol = "udp"
-        },
-        {
-          protocol = "icmp"
-        }
-      ]
-    }
-  ]
+  rules      = var.firewall_rules
 }
 
 module "network" {
-  source      = "../../../modules/network"
-  project_id  = var.project_id
-  region      = var.region
-  subnetwork  = var.subnetwork
-  subnet_cidr = var.subnetwork_cidr
-  vpc_name    = var.vpc_name
-  firewall_rules = var.firewall_rules
+  source = "../../../modules/network"
+
+  project_id     = var.project_id
+  region         = var.region
+  vpc_name       = var.vpc_name
+  subnet_cidr    = var.subnet_cidr
+  subnetwork     = var.subnetwork
+  enable_default_firewall = false
 }
 
 resource "google_compute_router" "router" {
@@ -90,16 +59,16 @@ module "gke" {
   subnetwork = module.network.subnet_id
   remove_default_node_pool = true
   initial_node_count       = 1
-  # master_authorized_networks_config = {
-  #   cidr_blocks = [
-  #     {
-  #       display_name = "all"
-  #       cidr_block   = "49.37.120.55/32"
-  #     }
-  #   ]
-  #   # gcp_public_cidrs_access_enabled      = true
-  #   private_endpoint_enforcement_enabled = false
-  # }
+  master_authorized_networks_config = {
+    cidr_blocks = [
+      {
+        display_name = "mylaptop"
+        cidr_block   = var.ssh_source_ranges[0]
+      }
+    ]
+    # gcp_public_cidrs_access_enabled      = true
+    private_endpoint_enforcement_enabled = false
+  }
   private_cluster_config = {
     enable_private_nodes    = true
     enable_private_endpoint = false
@@ -118,6 +87,10 @@ module "gke" {
     client_certificate_config = { issue_client_certificate = false }
   }
 
+}
+
+locals {
+  argocd_enable = var.enable_gke && var.enable_argocd
 }
 
 resource "google_container_node_pool" "primary_nodes" {
@@ -149,4 +122,16 @@ resource "google_container_node_pool" "primary_nodes" {
       "https://www.googleapis.com/auth/cloud-platform"
     ]
   }
+}
+
+resource "helm_release" "argocd" {
+  count = local.argocd_enable ? 1 : 0
+  name  = "argocd"
+  # repository = "https://argoproj.github.io/argo-helm"
+  chart      = "../../../modules/helm/argo-cd"
+  create_namespace = true
+  namespace = "argocd"
+  values = [ 
+    file("../../../modules/helm/argo-cd/values.yaml") 
+  ]
 }

@@ -47,7 +47,7 @@ variable "vpc_name" {
   default     = "dev-vpc"
 }
 
-variable "subnetwork_cidr" {
+variable "subnet_cidr" {
   type        = string
   description = "CIDR range for the subnetwork"
   default     = "10.200.0.0/16"
@@ -67,4 +67,14 @@ variable "firewall_rules" {
   description = "List of firewall rules"
   type        = any
   default     = [] # Providing a default empty list prevents this error if no rules are needed
+}
+
+variable "enable_gke" {
+  type = bool
+  default = false
+}
+
+variable "enable_argocd" {
+  type=bool
+  default = false
 }

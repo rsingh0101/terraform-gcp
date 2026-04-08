@@ -1,0 +1,7 @@
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: argocd-cert
+spec:
+  domains:
+    - argocd.dev-gke.com
